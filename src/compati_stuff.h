@@ -41,6 +41,7 @@ void clear_screen_no_sparkle(HANDLE hConsole) {
 }
 
 #endif // _WIN32
+// hasn't finish yet
 #ifdef __linux__
 #include <termios.h>
 
