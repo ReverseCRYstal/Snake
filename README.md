@@ -1,2 +1,2 @@
-# Snake
-A classic mini game
+# 贪吃蛇
+经典小游戏
