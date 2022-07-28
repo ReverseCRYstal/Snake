@@ -1,6 +1,15 @@
 #pragma once
-#ifndef COMPATI_STUFF
+/*
+	header compati_stuff.h
 
+	Copyright (c) 2022 ReverseCRYstal, All rights reserved.
+
+	MIT License
+
+*/
+
+#ifndef COMPATI_STUFF
+#define COMPATI_STUFF
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif // _MSC_VER
@@ -41,7 +50,6 @@ void clear_screen_no_sparkle(HANDLE hConsole) {
 }
 
 #endif // _WIN32
-// hasn't finish yet
 #ifdef __linux__
 #include <termios.h>
 

@@ -1,3 +1,10 @@
+/*
+	source file: main.cpp
+
+	Copyright (c) 2022 TheCryStal, All rights reserved.
+
+	MIT License
+*/
 #include "compati_stuff.h"
 
 #include <cstdio>
