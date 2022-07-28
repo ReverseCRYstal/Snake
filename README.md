@@ -1,7 +1,8 @@
 # Snake
 A classic mini game
 # Environments 
-C++ 11
+Window 7+
+Linux is not yet supported
 # Build
 ## Windows
 install MinGW from [here](https://sourceforge.net/projects/mingw/)
