@@ -2,6 +2,7 @@
 A classic mini game
 # Environments 
 Window 7+
+
 Linux is not yet supported
 # Build
 ## Windows
