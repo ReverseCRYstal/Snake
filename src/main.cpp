@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <ctime>
 #include <cstdlib>
-#include <list>
+#include <queue>
 #include <thread>
 #include <clocale>
 
@@ -88,7 +88,7 @@ int main() {
 	setlocale(LC_CTYPE, "");
 	srand(unsigned(time(NULL)));
 
-	std::list<dir4> dirQuque;
+	std::queue<dir4> dirQueue;
 
 	dir4 curDir, dirRec;
 	curDir = dirRec = dir4::forward;
@@ -138,7 +138,7 @@ int main() {
 				pauseTime = pauseTime / 2;
 		}
 	out_of_chk:
-		dirQuque.push_back(curDir);
+		dirQueue.push(curDir);
 
 		position before = head;
 		// move
@@ -149,8 +149,8 @@ int main() {
 			field[head.y][head.x] = element::head;
 			field[before.y][before.x] = element::body;
 			field[tail.y][tail.x] = element::blank;
-			Move(tail, dirQuque.front());
-			dirQuque.pop_front();
+			Move(tail, dirQueue.front());
+			dirQueue.pop();
 			break;
 		case element::body:
 			clear_screen_no_sparkle(consoleHandle);
