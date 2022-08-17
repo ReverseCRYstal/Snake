@@ -5,16 +5,17 @@
 
 	MIT License
 */
-#include "compati_stuff.h"
 
-#include <cstdio>
-#include <ctime>
+
 #include <cstdlib>
 #include <queue>
 #include <thread>
 #include <clocale>
 
-// four kind of direction
+#include <conio.h>
+#include <Windows.h>
+
+// four kinds of direction
 enum class dir4 :unsigned {
 	forward = 0u,
 	backward,
@@ -22,6 +23,7 @@ enum class dir4 :unsigned {
 	right_toward
 };
 
+// element appers in field
 enum class element :unsigned char {
 	blank = 0u,
 	head,
@@ -34,7 +36,7 @@ constexpr unsigned char width = 15;
 // length of field
 constexpr unsigned char length = 15;
 
-constexpr position spawnPoint = { length / 2 + length % 2,width / 2 + width % 2 };
+constexpr COORD spawnPoint = { length / 2 + length % 2,width / 2 + width % 2 };
 
 // Array is kind of Hash so it is high-effective
 constexpr dir4 dirOppositeImg[4] = {
@@ -49,28 +51,29 @@ element field[length][width] = { {} };
 
 unsigned score = 0u;
 
-void Move(position& pos, dir4 dir) {
+// You can hack it to get the effect you wanted
+void Move(COORD& pos, dir4 dir) {
 	switch (dir)
 	{
 	case dir4::forward:
-		pos.y--;
-		if (pos.y < 0)
-			pos.y = length - 1;
+		pos.Y--;
+		if (pos.Y < 0)
+			pos.Y = length - 1;
 		break;
 	case dir4::backward:
-		pos.y++;
-		if (pos.y > length - 1)
-			pos.y = 0;
+		pos.Y++;
+		if (pos.Y > length - 1)
+			pos.Y = 0;
 		break;
 	case dir4::left_toward:
-		pos.x--;
-		if (pos.x < 0)
-			pos.x = width - 1;
+		pos.X--;
+		if (pos.X < 0)
+			pos.X = width - 1;
 		break;
 	case dir4::right_toward:
-		pos.x++;
-		if (pos.x > width - 1)
-			pos.x = 0;
+		pos.X++;
+		if (pos.X > width - 1)
+			pos.X = 0;
 		break;
 	}
 }
@@ -78,7 +81,7 @@ void Move(position& pos, dir4 dir) {
 void PrintField() {
 	for (size_t i = 0; i < length; i++) {
 		for (size_t j = 0; j < width; j++)
-			putwchar(L"¡õ¡ñ¡ö¡î"[unsigned(field[i][j])]);
+			putwchar(L"â–¡â—â– â˜†"[unsigned(field[i][j])]);
 		putchar('\n');
 	}
 	printf("current score: %d", score);
@@ -93,24 +96,27 @@ int main() {
 	dir4 curDir, dirRec;
 	curDir = dirRec = dir4::forward;
 
-	position foodPos = { rand() % length,rand() % width };
-	position tail = spawnPoint, head = spawnPoint;
+	COORD foodPos = { rand() % length,rand() % width };
+	COORD tail = spawnPoint, head = spawnPoint;
 
-	field[foodPos.y][foodPos.x] = element::food;
+	field[foodPos.Y][foodPos.X] = element::food;
 
 	int snakeLength = 1;
 	unsigned pauseTime = 100u;
 
 	char got = '\0';
 
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
+	{ // 'cci' is used only once, so pop it after use
+		CONSOLE_CURSOR_INFO cci = { 1,false };
+		SetConsoleCursorInfo(hConsole, &cci);
+	}
 
 	// main loop
 	while (true) {
-		if (keyboard_hit()) {
-
-			switch (getchar_no_echo()) {
+		if (_kbhit()) {
+			switch (_getch()) {
 			case 'w':
 			case 'W':
 				dirRec = dir4::forward;
@@ -140,37 +146,41 @@ int main() {
 	out_of_chk:
 		dirQueue.push(curDir);
 
-		position before = head;
+		COORD before = head;
 		// move
 		Move(head, curDir);
-		switch (field[head.y][head.x])
+		switch (field[head.Y][head.X])
 		{
 		case element::blank:
-			field[head.y][head.x] = element::head;
-			field[before.y][before.x] = element::body;
-			field[tail.y][tail.x] = element::blank;
+			field[head.Y][head.X] = element::head;
+			field[before.Y][before.X] = element::body;
+			field[tail.Y][tail.X] = element::blank;
 			Move(tail, dirQueue.front());
 			dirQueue.pop();
 			break;
 		case element::body:
-			clear_screen_no_sparkle(consoleHandle);
+			system("cls");
 			puts("GAME OVER!\n");
-			printf("Finally score: %d", score);
+			printf("Finally score: %d\n", score);
 			system("pause");
-			exit(0);
+			return 0;
 		case element::food:
-			field[before.y][before.x] = element::body;
-			field[head.y][head.x] = element::head;
+			field[before.Y][before.X] = element::body;
+			field[head.Y][head.X] = element::head;
 			snakeLength++;
 			score += 100;
-			foodPos = { short(rand() % length),short(rand() % width) };
-			field[foodPos.y][foodPos.x] = element::food;
+
+			do {
+				foodPos = { short(rand() % length),short(rand() % width) };
+			} while (field[foodPos.Y][foodPos.X] != element::blank);
+
+			field[foodPos.Y][foodPos.X] = element::food;
 			break;
 		}
 
 		PrintField();
-		std::this_thread::sleep_for(std::chrono::milliseconds(pauseTime));
-		clear_screen_no_sparkle(consoleHandle);
+		Sleep(pauseTime);
+		SetConsoleCursorPosition(hConsole, { 0,0 });
 	}
 	return 0;
 }
