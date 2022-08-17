@@ -1,2 +1,6 @@
 # Snake
-经典小游戏
+Classic mini game
+# Build
+## Only Support MSBuild
+run this VVV command after install Visual Studio
+``` cl main.cpp ```
